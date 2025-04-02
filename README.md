@@ -20,8 +20,8 @@ Dies ist das Backend für **Coderr**, eine Webplattform zur Vermittlung von IT-D
 ### 1. Repo klonen
 
 ```bash
-git clone https://github.com/DEIN-BENUTZERNAME/DEIN-REPO.git
-cd DEIN-REPO
+git clone https://github.com/SpecialForceX/Coderr-backend.git
+cd Coderr-backend
 ```
 
 ### 2. Virtuelle Umgebung
