@@ -4,6 +4,13 @@ Dies ist das Backend für **Coderr**, eine Webplattform zur Vermittlung von IT-D
 
 ---
 
+# Frontend
+Version 1.2.0
+
+no changes in config.js
+
+---
+
 ## 🔧 Tech Stack
 
 - **Python 3.11+**
