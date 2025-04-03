@@ -1,6 +1,6 @@
 # Coderr Backend 💻
 
-Dies ist das Backend für **Coderr**, eine Webplattform zur Vermittlung von IT-Dienstleistungen zwischen Freelancern und Kunden.
+This is the backend for **Coderr**, a web platform that connects freelancers with clients for IT services.
 
 ---
 
@@ -16,22 +16,22 @@ no changes in config.js
 - **Python 3.11+**
 - **Django 4+**
 - **Django REST Framework**
-- **SQLite** (lokal) / beliebige DB für Deployment
+- **SQLite** (local) / Any DB for deployment
 - **Token-Auth (DRF)**
 - **Modulare App-Struktur**
 
 ---
 
-## 🚀 Lokale Entwicklung
+## 🚀 Local Development  
 
-### 1. Repo klonen
+### 1. Clone the repository  
 
 ```bash
 git clone https://github.com/SpecialForceX/Coderr-backend.git
 cd Coderr-backend
 ```
 
-### 2. Virtuelle Umgebung
+### 2. Create a virtual environment
 
 ```bash
 python -m venv env
@@ -39,26 +39,26 @@ source env/bin/activate  # Linux/macOS
 env\Scripts\activate     # Windows
 ```
 
-### 3. Abhängigkeiten installieren
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Datenbankmigrationen
+### 4. Run database migrations
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 5. Superuser erstellen (optional)
+### 5. (Optional) Create a superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 6. Server starten
+### 6. Start the development server
 
 ```bash
 python manage.py runserver
@@ -66,27 +66,24 @@ python manage.py runserver
 
 ---
 
-## 🔐 Authentifizierung
+## 🔐 Authentication
 
-Das Projekt verwendet **Token Authentication**.
+This project uses Token Authentication.
 
-- Anmeldung per `/api/login/`
-- Registrierung per `/api/registration/`
-- Danach: Token in den `Authorization`-Header schicken:
-
-```http
-Authorization: Token dein_token
+- Login via: `/api/login/`  
+- Registration via: `/api/registration/`  
+- After login, include your token in the Authorization header:  
+  `Authorization: Token your_token`
 ```
 
 ---
 
 ## 📂 Media & Static Files
 
-- Uploads werden im Ordner `media/` gespeichert.
-- Stelle sicher, dass `MEDIA_URL` und `MEDIA_ROOT` korrekt in `settings.py` gesetzt sind.
+Uploads are stored in the `media/` directory.  
+Make sure `MEDIA_URL` and `MEDIA_ROOT` are correctly set in your `settings.py`.
 
 ---
 
-## 💬 Kontakt
-
-> Entwickelt im Rahmen der Dev Akademie 👩‍💻  
+## 💬 Contact  
+Developed as part of the Dev Akademie 👩‍💻
