@@ -74,10 +74,8 @@ This project uses Token Authentication.
 - Registration via: `/api/registration/`  
 - After login, include your token in the Authorization header:  
   `Authorization: Token your_token`
-```
 
 ---
-
 
 ## 📂 Media & Static Files
 
