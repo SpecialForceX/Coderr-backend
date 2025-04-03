@@ -78,6 +78,7 @@ This project uses Token Authentication.
 
 ---
 
+
 ## 📂 Media & Static Files
 
 Uploads are stored in the `media/` directory.  
