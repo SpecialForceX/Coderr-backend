@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from offers_app.models import Offer, OfferDetail
 from users_app.models import CustomUser
+from django.db.models import Min 
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
@@ -20,14 +21,23 @@ class OfferSerializer(serializers.ModelSerializer):
     user_details = UserDetailsSerializer(source='user', read_only=True)
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     image = serializers.ImageField(required=False, allow_null=True)
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
         fields = [
             'id', 'user', 'title', 'image', 'description',
             'created_at', 'updated_at',
-            'details', 'user_details'
+            'details', 'user_details',
+            'min_price', 'min_delivery_time'
         ]
+
+    def get_min_price(self, obj):
+        return obj.details.aggregate(Min('price'))['price__min']
+
+    def get_min_delivery_time(self, obj):
+        return obj.details.aggregate(Min('delivery_time_in_days'))['delivery_time_in_days__min']
 
     def create(self, validated_data):
         details_data = validated_data.pop('details')

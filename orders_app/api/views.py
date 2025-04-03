@@ -8,6 +8,9 @@ from django.shortcuts import get_object_or_404
 from django.db import models
 from rest_framework.views import APIView
 from users_app.models import CustomUser
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -28,7 +31,11 @@ class OrderListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         offer_detail_id = self.request.data.get('offer_detail_id')
         print("RAW DATA:", self.request.data)
-        print("OfferDetail ID:", self.request.data.get('offer_detail'))
+
+        try:
+            offer_detail_id = int(offer_detail_id)
+        except (ValueError, TypeError):
+            raise ValidationError({"offer_detail_id": ["This value must be a number."]})
 
         offer_detail = get_object_or_404(OfferDetail, pk=offer_detail_id)
 
@@ -60,17 +67,25 @@ class OrderDeleteView(generics.DestroyAPIView):
 
 
 class InProgressOrderCountView(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, business_user_id):
+        business_user = get_object_or_404(CustomUser, id=business_user_id)
+
+        if not business_user.is_business:
+            return Response({"error": "User is not a business user."}, status=400)
+
         count = Order.objects.filter(
             business_user_id=business_user_id,
             status='in_progress'
         ).count()
+
         return Response({'order_count': count})
 
 
 class CompletedOrderCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, business_user_id):
         try:
             user = CustomUser.objects.get(id=business_user_id)
@@ -79,6 +94,10 @@ class CompletedOrderCountView(APIView):
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
 
-        completed_count = Order.objects.filter(business_user=user, status="completed").count()
+        completed_count = Order.objects.filter(
+            business_user=user,
+            status="completed"
+        ).count()
+
         return Response({"completed_order_count": completed_count}, status=status.HTTP_200_OK)
 

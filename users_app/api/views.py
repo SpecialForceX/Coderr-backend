@@ -24,9 +24,8 @@ class ProfileDetailView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsProfileOwner]
 
     def get_permissions(self):
-        if self.request.method == 'GET':
-            return [AllowAny()]
         return [IsAuthenticated(), IsProfileOwner()]
+
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
