@@ -18,7 +18,7 @@ no changes in config.js
 - **Django REST Framework**
 - **SQLite** (local) / Any DB for deployment
 - **Token-Auth (DRF)**
-- **Modulare App-Struktur**
+- **Modular app structure**
 
 ---
 
