@@ -69,8 +69,32 @@ class OrderUpdateView(generics.UpdateAPIView):
             obj = Order.objects.get(pk=self.kwargs["pk"])
         except Order.DoesNotExist:
             raise NotFound("Order with this ID does not exist.")
+
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        allowed_fields = {'status'}
+        disallowed = set(request.data.keys()) - allowed_fields
+        if disallowed:
+            return Response(
+                {"error": f"Only these fields can be updated: {', '.join(allowed_fields)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ✨ Statuswert prüfen
+        valid_statuses = ['in_progress', 'completed', 'cancelled']
+        new_status = request.data.get('status')
+        if new_status not in valid_statuses:
+            return Response(
+                {"error": f"Invalid status: '{new_status}'. Must be one of: {', '.join(valid_statuses)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().update(request, *args, **kwargs)
+
 
 
 class OrderDeleteView(generics.DestroyAPIView):

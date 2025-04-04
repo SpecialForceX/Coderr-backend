@@ -5,9 +5,21 @@ from django.db.models import Min
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
+    offer_type = serializers.CharField()
     class Meta:
         model = OfferDetail
         exclude = ['offer']
+
+    def validate_offer_type(self, value):
+        valid_choices = [choice[0] for choice in OfferDetail._meta.get_field("offer_type").choices]
+        if value not in valid_choices:
+            raise serializers.ValidationError([
+                f"'{value}' is not a valid choice.",
+                f"Valid options are: {', '.join(valid_choices)}."
+            ])
+
+        return value
+
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -56,10 +68,19 @@ class OfferSerializer(serializers.ModelSerializer):
         instance.save()
 
         if details_data is not None:
-            instance.details.all().delete()
+            if not details_data:
+                raise serializers.ValidationError({"details": "Details dürfen nicht leer sein."})
 
+            validated_details = []
             for detail in details_data:
-                OfferDetail.objects.create(offer=instance, **detail)
+                detail_serializer = OfferDetailSerializer(data=detail)
+                detail_serializer.is_valid(raise_exception=True)
+                validated_details.append(detail_serializer.validated_data)
+
+            instance.details.all().delete()
+            for valid_detail in validated_details:
+                OfferDetail.objects.create(offer=instance, **valid_detail)
+
 
         return instance
 
