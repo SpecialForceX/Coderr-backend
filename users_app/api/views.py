@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 User = get_user_model()
@@ -18,19 +19,27 @@ from rest_framework.response import Response
 class NoPagination(PageNumberPagination):
     page_size = 100000
 
+class IsAuthenticatedOrOwnerForPatch(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        return obj == request.user 
+
 class ProfileDetailView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsProfileOwner]
-
-    def get_permissions(self):
-        return [IsAuthenticated(), IsProfileOwner()]
-
+    permission_classes = [IsAuthenticatedOrOwnerForPatch]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+
 
 
 class BusinessProfileListView(generics.ListAPIView):

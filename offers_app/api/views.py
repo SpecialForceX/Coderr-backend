@@ -6,10 +6,16 @@ from offers_app.api.serializers import OfferSerializer, OfferListSerializer, Off
 from users_app.api.permissions import IsBusinessUser, IsOwner
 from django.db.models import Min
 from rest_framework.exceptions import ValidationError
+from rest_framework.pagination import PageNumberPagination
 
+
+class OfferPagination(PageNumberPagination):
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all().prefetch_related('details', 'user')
+    pagination_class = OfferPagination 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['user', 'user__id']
     ordering_fields = ['updated_at']

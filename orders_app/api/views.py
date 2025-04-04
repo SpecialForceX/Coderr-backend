@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from users_app.models import CustomUser
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound
 
 
 
@@ -37,7 +38,11 @@ class OrderListCreateView(generics.ListCreateAPIView):
         except (ValueError, TypeError):
             raise ValidationError({"offer_detail_id": ["This value must be a number."]})
 
-        offer_detail = get_object_or_404(OfferDetail, pk=offer_detail_id)
+        try:
+            offer_detail = OfferDetail.objects.select_related("offer__user").get(pk=offer_detail_id)
+        except OfferDetail.DoesNotExist:
+            raise ValidationError({"offer_detail_id": ["OfferDetail with this ID does not exist."]})
+
 
         serializer.save(
             customer_user=self.request.user,
@@ -59,6 +64,14 @@ class OrderUpdateView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsBusinessUser]
     http_method_names = ['patch']
 
+    def get_object(self):
+        try:
+            obj = Order.objects.get(pk=self.kwargs["pk"])
+        except Order.DoesNotExist:
+            raise NotFound("Order with this ID does not exist.")
+        self.check_object_permissions(self.request, obj)
+        return obj
+
 
 class OrderDeleteView(generics.DestroyAPIView):
     queryset = Order.objects.all()
@@ -67,7 +80,7 @@ class OrderDeleteView(generics.DestroyAPIView):
 
 
 class InProgressOrderCountView(generics.RetrieveAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         business_user = get_object_or_404(CustomUser, id=business_user_id)
